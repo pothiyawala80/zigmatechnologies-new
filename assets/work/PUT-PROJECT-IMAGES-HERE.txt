@@ -1,0 +1,2 @@
+Put your project screenshots in this folder (jpg/png/webp, ideally 1600x1000).
+Then in assets/projects.js set:  image: "assets/work/your-file.jpg"

@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zigma · Project Manager</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="assets/fonts.css">
+<style>
+  :root{--bg:#07070d;--panel:#11111c;--line:#25253a;--text:#ececf5;--mute:#8b8ba7;--acc:#7c5cff;--acc2:#22d3ee;--ok:#34d399;--bad:#f87171}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Space Grotesk",system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+    background-image:radial-gradient(600px 400px at 0% 0%,#7c5cff22,transparent),radial-gradient(600px 400px at 100% 100%,#22d3ee18,transparent)}
+  header{padding:28px 20px 8px;max-width:1200px;margin:auto;display:flex;align-items:center;gap:14px}
+  header img{height:34px}
+  header h1{font-size:22px;font-weight:700}
+  header p{color:var(--mute);font-size:14px}
+  .wrap{max-width:1200px;margin:auto;padding:16px 20px 60px;display:grid;grid-template-columns:1.1fr 1fr;gap:24px}
+  @media(max-width:900px){.wrap{grid-template-columns:1fr}}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px}
+  .panel h2{font-size:16px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+  label{display:block;font-size:12px;color:var(--mute);margin:12px 0 6px;letter-spacing:.06em;text-transform:uppercase}
+  label b{color:var(--acc2);font-weight:500}
+  input,textarea,select{width:100%;background:#0a0a14;border:1px solid var(--line);border-radius:10px;padding:11px 12px;color:var(--text);font:inherit;font-size:15px;outline:none;transition:border .2s}
+  input:focus,textarea:focus{border-color:var(--acc)}
+  textarea{resize:vertical;min-height:70px}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .row3{display:grid;grid-template-columns:1fr 1fr 90px;gap:12px}
+  input[type=color]{padding:4px;height:46px;cursor:pointer}
+  .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+  button{font:inherit;font-size:14px;font-weight:500;border:0;border-radius:999px;padding:11px 18px;cursor:pointer;transition:transform .15s,opacity .2s}
+  button:hover{transform:translateY(-1px)}
+  .primary{background:linear-gradient(90deg,var(--acc),var(--acc2));color:#fff}
+  .ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+  .small{padding:6px 10px;font-size:12px}
+  .hint{font-size:13px;color:var(--mute);line-height:1.5;margin-top:8px}
+  .hint code{color:var(--acc2)}
+  .card{border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#0b0b16}
+  .cover{aspect-ratio:16/10;position:relative;display:grid;place-items:center;overflow:hidden}
+  .cover img{width:100%;height:100%;object-fit:cover}
+  .cover .ini{font-size:64px;font-weight:700;color:#fff;mix-blend-mode:overlay}
+  .card .body{padding:16px}
+  .meta{font-size:12px;color:var(--mute);text-transform:uppercase;letter-spacing:.08em}
+  .card h3{font-size:20px;margin:6px 0}
+  .card p{color:#c3c3d6;font-size:14px;line-height:1.5}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .tags span{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--mute)}
+  .list{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+  .item{display:flex;align-items:center;gap:10px;background:#0a0a14;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+  .item .dot{width:12px;height:12px;border-radius:50%;flex:none}
+  .item .t{flex:1;min-width:0}
+  .item .t b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+  .item .t small{color:var(--mute)}
+  .item button{background:#1a1a2a;color:var(--text)}
+  .item button.del{color:var(--bad)}
+  .steps{counter-reset:s;list-style:none;margin-top:10px}
+  .steps li{counter-increment:s;position:relative;padding-left:34px;margin:10px 0;font-size:14px;line-height:1.5;color:#c3c3d6}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:0;width:24px;height:24px;border-radius:50%;background:var(--acc);color:#fff;display:grid;place-items:center;font-size:12px}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ok);color:#03130c;padding:10px 18px;border-radius:999px;font-weight:500;transition:transform .3s}
+  .toast.on{transform:translateX(-50%) translateY(0)}
+  pre{background:#0a0a14;border:1px solid var(--line);border-radius:12px;padding:14px;font-size:12px;color:#b9b9d6;max-height:220px;overflow:auto;white-space:pre-wrap;margin-top:10px}
+</style>
+</head>
+<body>
+<header>
+  <img src="assets/logo-mark.png" alt="">
+  <div><h1>Project Manager</h1><p>Add, edit, reorder your past work — then download the updated file.</p></div>
+</header>
+
+<div class="wrap">
+  <section class="panel">
+    <h2><span id="formTitle">Add a project</span> <button class="ghost small" id="resetBtn" type="button">Clear form</button></h2>
+    <form id="f" autocomplete="off">
+      <label>Project title <b>*</b></label>
+      <input name="title" required placeholder="e.g. CarePulse Patient Portal">
+      <div class="row">
+        <div><label>Client</label><input name="client" placeholder="Company name"></div>
+        <div><label>Category <b>*</b></label><input name="category" required list="cats" placeholder="Web App"></div>
+      </div>
+      <datalist id="cats"><option>Web App</option><option>Mobile</option><option>AI / ML</option><option>Cloud / IoT</option><option>UI/UX</option><option>Blockchain</option><option>DevOps</option><option>Consulting</option></datalist>
+      <label>One-line summary <b>*</b></label>
+      <textarea name="summary" required maxlength="140" placeholder="What you built and the result — keep it short."></textarea>
+      <label>Tech / tags <span style="text-transform:none">(comma separated)</span></label>
+      <input name="tags" placeholder="React, AWS, Python">
+      <div class="row3">
+        <div><label>Live link</label><input name="link" placeholder="https://"></div>
+        <div><label>Year</label><input name="year" placeholder="2025"></div>
+        <div><label>Colour</label><input name="color" type="color" value="#7c5cff"></div>
+      </div>
+      <label>Screenshot <span style="text-transform:none">(optional)</span></label>
+      <input name="imgfile" type="file" accept="image/*">
+      <input name="image" placeholder="or type a path / URL, e.g. assets/work/carepulse.jpg" style="margin-top:8px">
+      <p class="hint">If you pick a file, copy that same image into the <code>assets/work/</code> folder on your website.</p>
+      <div class="btns">
+        <button class="primary" type="submit" id="saveBtn">Add to list</button>
+      </div>
+    </form>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:24px">
+    <div class="panel">
+      <h2>Live preview</h2>
+      <div class="card" id="preview"></div>
+    </div>
+    <div class="panel">
+      <h2>Your projects <span class="meta" id="count"></span></h2>
+      <div class="list" id="list"></div>
+      <div class="btns">
+        <button class="primary" id="dl" type="button">⬇ Download projects.js</button>
+        <button class="ghost" id="copy" type="button">Copy code</button>
+      </div>
+      <ol class="steps">
+        <li>Click <b>Download projects.js</b>.</li>
+        <li>Replace the old file at <code style="color:var(--acc2)">assets/projects.js</code> in your website folder.</li>
+        <li>Refresh the site (or push to GitHub) — your work section updates everywhere.</li>
+      </ol>
+    </div>
+  </section>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="assets/projects.js"></script>
+<script>
+(function(){
+  let projects = (window.ZIGMA_PROJECTS || []).map(p => Object.assign({}, p));
+  let editing = -1;
+  const f = document.getElementById('f');
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  let objUrl = null;
+
+  function read(){
+    const d = Object.fromEntries(new FormData(f).entries());
+    return {
+      title: (d.title||'').trim(), client: (d.client||'').trim(), category: (d.category||'').trim(),
+      year: (d.year||'').trim(), summary: (d.summary||'').trim(),
+      tags: (d.tags||'').split(',').map(t=>t.trim()).filter(Boolean),
+      image: (d.image||'').trim(), link: (d.link||'').trim(), color: d.color || '#7c5cff'
+    };
+  }
+  function cardHTML(p, img){
+    const ini = (p.title||'Z').split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const c = p.color || '#7c5cff';
+    const src = img || p.image;
+    return `<div class="cover" style="background:radial-gradient(circle at 30% 20%, ${c}, transparent 60%), radial-gradient(circle at 80% 90%, ${c}88, #0b0b16 70%)">
+      ${src ? `<img src="${esc(src)}" alt="" onerror="this.remove()">` : `<span class="ini">${esc(ini)}</span>`}</div>
+      <div class="body"><div class="meta">${esc(p.category||'Category')}${p.year?' · '+esc(p.year):''}${p.client?' · '+esc(p.client):''}</div>
+      <h3>${esc(p.title||'Project title')}</h3><p>${esc(p.summary||'Your one-line summary appears here.')}</p>
+      <div class="tags">${(p.tags||[]).map(t=>`<span>${esc(t)}</span>`).join('')}</div></div>`;
+  }
+  function renderPreview(){ document.getElementById('preview').innerHTML = cardHTML(read(), objUrl); }
+  function renderList(){
+    document.getElementById('count').textContent = projects.length + ' total';
+    document.getElementById('list').innerHTML = projects.map((p,i)=>`
+      <div class="item"><span class="dot" style="background:${esc(p.color||'#7c5cff')}"></span>
+      <div class="t"><b>${esc(p.title)}</b><small>${esc(p.category)}${p.year?' · '+esc(p.year):''}</small></div>
+      <button class="small" data-a="up" data-i="${i}" title="Move up">↑</button>
+      <button class="small" data-a="down" data-i="${i}" title="Move down">↓</button>
+      <button class="small" data-a="edit" data-i="${i}">Edit</button>
+      <button class="small del" data-a="del" data-i="${i}">✕</button></div>`).join('') || '<p class="hint">No projects yet.</p>';
+  }
+  function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('on'); setTimeout(()=>t.classList.remove('on'),1800); }
+  function clearForm(){ f.reset(); editing=-1; objUrl=null; document.getElementById('saveBtn').textContent='Add to list'; document.getElementById('formTitle').textContent='Add a project'; renderPreview(); }
+
+  function fileText(){
+    const head = document.querySelector('script[data-head]') ? '' :
+`/* ============================================================
+   ZIGMA — PAST WORK / PROJECT LIST
+   Edit with add-project.html, or by hand: copy a { ... } block,
+   change the text, save. Fields: title, client, category, year,
+   summary, tags [..], image (path/URL or ""), link, color.
+   ============================================================ */
+
+`;
+    const body = projects.map(p => '  ' + JSON.stringify({
+      title:p.title, client:p.client||'', category:p.category, year:p.year||'', summary:p.summary,
+      tags:p.tags||[], image:p.image||'', link:p.link||'', color:p.color||'#7c5cff'
+    }, null, 2).replace(/\n/g,'\n  ')).join(',\n');
+    return head + 'window.ZIGMA_PROJECTS = [\n' + body + '\n];\n';
+  }
+
+  f.addEventListener('input', renderPreview);
+  f.imgfile.addEventListener('change', e => {
+    const file = e.target.files[0]; if(!file) return;
+    objUrl = URL.createObjectURL(file);
+    f.image.value = 'assets/work/' + file.name;
+    renderPreview();
+  });
+  f.addEventListener('submit', e => {
+    e.preventDefault();
+    const p = read();
+    if(editing > -1){ projects[editing] = p; toast('Project updated'); }
+    else { projects.unshift(p); toast('Added — now download projects.js'); }
+    clearForm(); renderList();
+  });
+  document.getElementById('resetBtn').onclick = clearForm;
+  document.getElementById('list').addEventListener('click', e => {
+    const b = e.target.closest('button'); if(!b) return;
+    const i = +b.dataset.i, a = b.dataset.a;
+    if(a==='del'){ if(confirmDel(i)){ projects.splice(i,1); } }
+    if(a==='up' && i>0){ [projects[i-1],projects[i]]=[projects[i],projects[i-1]]; }
+    if(a==='down' && i<projects.length-1){ [projects[i+1],projects[i]]=[projects[i],projects[i+1]]; }
+    if(a==='edit'){
+      const p = projects[i]; editing = i; objUrl=null;
+      ['title','client','category','year','summary','image','link'].forEach(k=>f[k].value=p[k]||'');
+      f.tags.value=(p.tags||[]).join(', '); f.color.value=p.color||'#7c5cff';
+      document.getElementById('saveBtn').textContent='Save changes';
+      document.getElementById('formTitle').textContent='Editing: '+p.title;
+      renderPreview(); f.scrollIntoView({behavior:'smooth'});
+    }
+    renderList();
+  });
+  // inline confirm without browser dialogs: second click within 2s deletes
+  let pendingDel = -1, pendTimer;
+  function confirmDel(i){
+    if(pendingDel===i){ pendingDel=-1; return true; }
+    pendingDel=i; clearTimeout(pendTimer); pendTimer=setTimeout(()=>pendingDel=-1,2000);
+    toast('Click ✕ again to remove'); return false;
+  }
+  document.getElementById('dl').onclick = () => {
+    const blob = new Blob([fileText()], {type:'text/javascript'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'projects.js'; a.click();
+    toast('Downloaded projects.js');
+  };
+  document.getElementById('copy').onclick = async () => {
+    try{ await navigator.clipboard.writeText(fileText()); toast('Copied to clipboard'); }
+    catch(_){ const pre=document.createElement('pre'); pre.textContent=fileText(); document.getElementById('copy').after(pre); }
+  };
+  renderPreview(); renderList();
+})();
+</script>
+</body>
+</html>

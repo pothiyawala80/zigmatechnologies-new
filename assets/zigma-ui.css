@@ -1,0 +1,168 @@
+/* ============================================================
+   ZIGMA UI — shared interactive layer (planner, forms, modals,
+   dock, FAQ). Each design sets the --ui-* colours in :root.
+   ============================================================ */
+:root{
+  --ui-bg:#11111c; --ui-bg2:#191928; --ui-fg:#f2f2fa; --ui-mute:#9a9ab8; --ui-line:rgba(255,255,255,.12);
+  --ui-acc:#7c5cff; --ui-acc2:#22d3ee; --ui-acc-fg:#fff; --ui-radius:22px; --ui-font:inherit; --ui-display:inherit;
+  --ui-overlay:rgba(3,3,8,.72); --ui-shadow:0 30px 80px rgba(0,0,0,.45);
+}
+html.zr *,html.zr *::before,html.zr *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+
+/* focus + skip link */
+:focus-visible{outline:2px solid var(--ui-acc2);outline-offset:3px;border-radius:6px}
+.zu-skip{position:fixed;left:12px;top:-60px;z-index:3000;background:var(--ui-acc);color:var(--ui-acc-fg);padding:10px 16px;border-radius:10px;font-family:var(--ui-font);transition:top .2s}
+.zu-skip:focus{top:12px}
+
+/* scroll progress */
+.zu-progress{position:fixed;top:0;left:0;height:3px;width:100%;z-index:2500;transform-origin:left;transform:scaleX(0);background:linear-gradient(90deg,var(--ui-acc),var(--ui-acc2));pointer-events:none}
+
+/* ---------- floating dock ---------- */
+.zu-dock{position:fixed;right:18px;bottom:18px;z-index:900;display:flex;flex-direction:column;align-items:center;gap:10px;font-family:var(--ui-font)}
+.zu-fab{position:relative;width:54px;height:54px;border-radius:50%;border:1px solid var(--ui-line);background:var(--ui-bg);color:var(--ui-fg);display:grid;place-items:center;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.25);transition:transform .25s,background .25s,opacity .3s}
+.zu-fab:hover{transform:translateY(-3px) scale(1.05)}
+.zu-fab svg{width:22px;height:22px}
+.zu-fab .zu-tip{position:absolute;right:66px;top:50%;transform:translateY(-50%) translateX(8px);white-space:nowrap;background:var(--ui-bg);color:var(--ui-fg);border:1px solid var(--ui-line);padding:7px 12px;border-radius:10px;font-size:13px;opacity:0;pointer-events:none;transition:.25s}
+.zu-fab:hover .zu-tip,.zu-fab:focus-visible .zu-tip{opacity:1;transform:translateY(-50%)}
+.zu-dock{transition:opacity .3s,transform .3s}
+.zu-dock.away{opacity:0;transform:translateY(20px);pointer-events:none}
+.zu-wa{background:#25d366;color:#fff;border-color:#25d366}
+.zu-plan{background:linear-gradient(135deg,var(--ui-acc),var(--ui-acc2));color:var(--ui-acc-fg);border:0}
+.zu-top{opacity:0;pointer-events:none}
+.zu-top.on{opacity:1;pointer-events:auto}
+.zu-top svg.ring{position:absolute;inset:-1px;width:56px;height:56px;transform:rotate(-90deg)}
+.zu-top svg.ring circle{fill:none;stroke:var(--ui-acc2);stroke-width:2.5;stroke-dasharray:163.4;stroke-dashoffset:163.4;stroke-linecap:round}
+.zu-row{display:flex;gap:10px;align-items:center}
+.zu-mini{width:42px;height:42px}
+.zu-mini svg{width:18px;height:18px}
+.zu-bubble{position:absolute;right:0;bottom:calc(100% + 12px);width:250px;background:var(--ui-bg);color:var(--ui-fg);border:1px solid var(--ui-line);border-radius:18px 18px 4px 18px;padding:14px 34px 14px 16px;font-size:14px;line-height:1.45;box-shadow:var(--ui-shadow);opacity:0;transform:translateY(10px) scale(.95);transform-origin:bottom right;pointer-events:none;transition:.35s cubic-bezier(.2,.9,.3,1.3)}
+.zu-bubble.on{opacity:1;transform:none;pointer-events:auto}
+.zu-bubble button{position:absolute;top:6px;right:8px;background:none;border:0;color:var(--ui-mute);font-size:16px;cursor:pointer}
+.zu-bubble a{display:inline-block;margin-top:8px;color:#25d366;font-weight:600}
+@media(max-width:600px){.zu-dock{right:12px;bottom:12px;gap:8px}.zu-fab{width:48px;height:48px}.zu-mini{width:40px;height:40px}.zu-fab .zu-tip{display:none}}
+
+/* ---------- toast ---------- */
+.zu-toast{position:fixed;left:50%;bottom:24px;z-index:3000;transform:translate(-50%,120px);background:var(--ui-fg);color:var(--ui-bg);padding:12px 20px;border-radius:999px;font-family:var(--ui-font);font-size:14px;font-weight:600;transition:transform .35s cubic-bezier(.2,.9,.3,1.2);box-shadow:var(--ui-shadow);max-width:calc(100% - 32px);text-align:center}
+.zu-toast.on{transform:translate(-50%,0)}
+
+/* ---------- modal shell ---------- */
+.zu-modal{position:fixed;inset:0;z-index:2000;display:grid;place-items:center;padding:16px;font-family:var(--ui-font);visibility:hidden}
+.zu-modal.open{visibility:visible}
+.zu-back{position:absolute;inset:0;background:var(--ui-overlay);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;transition:opacity .35s}
+.zu-modal.open .zu-back{opacity:1}
+.zu-box{position:relative;width:min(760px,100%);max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow:auto;background:var(--ui-bg);color:var(--ui-fg);border:1px solid var(--ui-line);border-radius:var(--ui-radius);box-shadow:var(--ui-shadow);
+  opacity:0;transform:translateY(30px) scale(.97);transition:opacity .35s,transform .45s cubic-bezier(.2,.9,.3,1.1)}
+.zu-modal.open .zu-box{opacity:1;transform:none}
+.zu-x{position:absolute;top:14px;right:14px;z-index:3;width:40px;height:40px;border-radius:50%;border:1px solid var(--ui-line);background:var(--ui-bg);color:var(--ui-fg);font-size:18px;cursor:pointer;transition:transform .3s}
+.zu-x:hover{transform:rotate(90deg)}
+
+/* ---------- buttons / inputs ---------- */
+.zu-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 20px;border-radius:999px;border:1px solid var(--ui-line);background:transparent;color:var(--ui-fg);font:inherit;font-size:15px;font-weight:600;cursor:pointer;transition:transform .2s,background .2s,opacity .2s;text-decoration:none}
+.zu-btn:hover{transform:translateY(-2px)}
+.zu-btn.pri{background:linear-gradient(100deg,var(--ui-acc),var(--ui-acc2));color:var(--ui-acc-fg);border:0}
+.zu-btn.wa{background:#25d366;color:#fff;border:0}
+.zu-btn[disabled]{opacity:.4;pointer-events:none}
+.zu-field{position:relative;margin-bottom:14px}
+.zu-field input,.zu-field textarea,.zu-field select{width:100%;padding:22px 16px 8px;border-radius:14px;border:1px solid var(--ui-line);background:var(--ui-bg2);color:var(--ui-fg);font:inherit;font-size:16px;outline:none;transition:border-color .2s,box-shadow .2s;appearance:none;-webkit-appearance:none}
+.zu-field textarea{min-height:110px;resize:vertical}
+.zu-field label{position:absolute;left:16px;top:16px;color:var(--ui-mute);font-size:15px;pointer-events:none;transition:.2s}
+.zu-field input:focus,.zu-field textarea:focus,.zu-field select:focus{border-color:var(--ui-acc);box-shadow:0 0 0 4px color-mix(in srgb,var(--ui-acc) 20%,transparent)}
+.zu-field input:focus+label,.zu-field input:not(:placeholder-shown)+label,.zu-field textarea:focus+label,.zu-field textarea:not(:placeholder-shown)+label,.zu-field select+label{top:7px;font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.zu-field.bad input,.zu-field.bad textarea{border-color:#f87171}
+.zu-field .err{display:none;color:#f87171;font-size:12px;margin-top:6px}
+.zu-field.bad .err{display:block}
+.zu-field.ok::after{content:"✓";position:absolute;right:14px;top:16px;color:#34d399;font-weight:700}
+.zu-field select{cursor:pointer;background-image:linear-gradient(45deg,transparent 50%,var(--ui-mute) 50%),linear-gradient(135deg,var(--ui-mute) 50%,transparent 50%);background-position:calc(100% - 22px) 26px,calc(100% - 16px) 26px;background-size:6px 6px;background-repeat:no-repeat}
+.zu-grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+@media(max-width:560px){.zu-grid2{grid-template-columns:1fr}}
+.zu-count{position:absolute;right:12px;bottom:10px;font-size:11px;color:var(--ui-mute)}
+
+/* ---------- planner ---------- */
+.zu-plan-box{padding:34px 34px 28px}
+@media(max-width:560px){.zu-plan-box{padding:26px 18px 20px}}
+.zu-steps{display:flex;gap:6px;margin:0 50px 26px 0}
+.zu-steps i{flex:1;height:4px;border-radius:4px;background:var(--ui-line);overflow:hidden;position:relative}
+.zu-steps i::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--ui-acc),var(--ui-acc2));transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.zu-steps i.done::after{transform:none}
+.zu-kicker{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--ui-acc2);margin-bottom:8px}
+.zu-h{font-family:var(--ui-display);font-size:clamp(24px,3.4vw,34px);line-height:1.1;letter-spacing:-.02em;margin-bottom:6px}
+.zu-sub{color:var(--ui-mute);margin-bottom:22px;font-size:15px}
+.zu-stage{position:relative;min-height:290px}
+.zu-pane{display:none}
+.zu-pane.on{display:block;animation:zuIn .45s cubic-bezier(.2,.8,.2,1)}
+.zu-pane.on.back{animation-name:zuInB}
+@keyframes zuIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
+@keyframes zuInB{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:none}}
+.zu-opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.zu-opt{position:relative;display:flex;flex-direction:column;gap:8px;align-items:flex-start;padding:16px;border-radius:16px;border:1px solid var(--ui-line);background:var(--ui-bg2);color:var(--ui-fg);font:inherit;font-size:15px;font-weight:500;cursor:pointer;text-align:left;transition:border-color .2s,transform .2s,background .2s}
+.zu-opt:hover{transform:translateY(-2px);border-color:var(--ui-mute)}
+.zu-opt .e{font-size:24px;line-height:1}
+.zu-opt small{color:var(--ui-mute);font-weight:400;font-size:12px}
+.zu-opt[aria-pressed="true"]{border-color:var(--ui-acc);background:color-mix(in srgb,var(--ui-acc) 16%,var(--ui-bg2))}
+.zu-opt[aria-pressed="true"]::after{content:"✓";position:absolute;top:10px;right:12px;width:22px;height:22px;border-radius:50%;background:var(--ui-acc);color:var(--ui-acc-fg);display:grid;place-items:center;font-size:12px;animation:zuPop .3s cubic-bezier(.2,.9,.3,1.6)}
+@keyframes zuPop{from{transform:scale(0)}}
+.zu-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.zu-chips .zu-opt{flex-direction:row;padding:11px 16px;border-radius:999px}
+.zu-chips .zu-opt[aria-pressed="true"]{padding-right:40px}
+.zu-chips .zu-opt[aria-pressed="true"]::after{top:50%;margin-top:-11px}
+.zu-label{font-size:13px;color:var(--ui-mute);margin:4px 0 10px;letter-spacing:.04em}
+.zu-nav{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:24px;padding-top:20px;border-top:1px solid var(--ui-line)}
+.zu-nav .hint{font-size:12px;color:var(--ui-mute)}
+@media(max-width:560px){.zu-nav .hint{display:none}}
+.zu-summary{background:var(--ui-bg2);border:1px solid var(--ui-line);border-radius:16px;padding:18px 20px;margin-bottom:18px}
+.zu-summary dl{display:grid;grid-template-columns:110px 1fr;gap:8px 14px;font-size:14px}
+.zu-summary dt{color:var(--ui-mute)}
+.zu-summary dd{word-break:break-word}
+.zu-actions{display:flex;flex-wrap:wrap;gap:10px}
+.zu-done{text-align:center;padding:20px 0}
+.zu-done .big{font-size:60px;animation:zuPop .6s cubic-bezier(.2,.9,.3,1.6)}
+.zu-confetti{position:absolute;inset:0;pointer-events:none;z-index:5}
+
+/* ---------- project modal ---------- */
+.zu-proj .cover{position:relative;aspect-ratio:16/9;overflow:hidden;border-radius:var(--ui-radius) var(--ui-radius) 0 0}
+.zu-proj .cover img{width:100%;height:100%;object-fit:cover}
+.zu-proj .cover .gen{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--ui-display);font-size:clamp(70px,14vw,140px);font-weight:800;color:rgba(255,255,255,.9);letter-spacing:-.04em}
+.zu-proj .body{padding:28px 30px 30px}
+.zu-proj .meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.zu-proj .meta span{font-size:12px;padding:5px 11px;border-radius:999px;background:var(--ui-bg2);border:1px solid var(--ui-line);color:var(--ui-mute)}
+.zu-proj h3{font-family:var(--ui-display);font-size:clamp(26px,4vw,40px);line-height:1.05;letter-spacing:-.02em;margin-bottom:12px}
+.zu-proj p.sum{color:var(--ui-mute);font-size:17px;line-height:1.6;margin-bottom:18px}
+.zu-proj .tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px}
+.zu-proj .tags span{font-size:13px;padding:6px 12px;border-radius:8px;background:color-mix(in srgb,var(--ui-acc) 18%,transparent);color:var(--ui-fg)}
+.zu-pn{position:absolute;top:calc((min(760px,100vw - 32px)) * .28);z-index:3;width:44px;height:44px;border-radius:50%;border:1px solid var(--ui-line);background:var(--ui-bg);color:var(--ui-fg);cursor:pointer;font-size:18px;transition:transform .2s}
+.zu-pn:hover{transform:scale(1.1)}
+.zu-pn.prev{left:14px}.zu-pn.next{right:14px}
+.zu-pcount{position:absolute;top:22px;left:20px;z-index:3;font-size:12px;padding:5px 10px;border-radius:999px;background:rgba(0,0,0,.45);color:#fff}
+[data-pi]{cursor:pointer}
+
+/* ---------- inline contact + faq ---------- */
+.zu-contact{display:grid;grid-template-columns:1fr 1.25fr;gap:30px;text-align:left;font-family:var(--ui-font);color:var(--ui-fg)}
+@media(max-width:860px){.zu-contact{grid-template-columns:1fr}}
+.zu-cside{display:flex;flex-direction:column;gap:12px}
+.zu-ccard{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:18px;border:1px solid var(--ui-line);background:var(--ui-bg2);color:var(--ui-fg);text-decoration:none;transition:transform .2s,border-color .2s;cursor:pointer;font:inherit;text-align:left;width:100%}
+.zu-ccard:hover{transform:translateX(4px);border-color:var(--ui-acc)}
+.zu-ccard .ic{width:44px;height:44px;flex:none;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,var(--ui-acc) 18%,transparent);font-size:20px}
+.zu-ccard small{display:block;color:var(--ui-mute);font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px}
+.zu-ccard b{font-weight:600;font-size:15px;word-break:break-word}
+.zu-ccard .act{margin-left:auto;font-size:12px;color:var(--ui-mute);white-space:nowrap}
+.zu-form{padding:26px;border-radius:var(--ui-radius);border:1px solid var(--ui-line);background:var(--ui-bg)}
+.zu-form h3{font-family:var(--ui-display);font-size:24px;margin-bottom:4px}
+.zu-form > p{color:var(--ui-mute);font-size:14px;margin-bottom:18px}
+.zu-topics{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.zu-topics .zu-opt{padding:9px 14px;border-radius:999px;font-size:14px}
+.zu-topics .zu-opt[aria-pressed="true"]::after{display:none}
+.zu-send{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.zu-faq{font-family:var(--ui-font);color:var(--ui-fg);border-top:1px solid var(--ui-line)}
+.zu-faq details{border-bottom:1px solid var(--ui-line)}
+.zu-faq summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:22px 4px;cursor:pointer;font-size:clamp(17px,2vw,21px);font-weight:500}
+.zu-faq summary::-webkit-details-marker{display:none}
+.zu-faq summary i{flex:none;width:34px;height:34px;border-radius:50%;border:1px solid var(--ui-line);position:relative;transition:transform .35s,background .3s}
+.zu-faq summary i::before,.zu-faq summary i::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:1.5px;background:currentColor;transform:translate(-50%,-50%)}
+.zu-faq summary i::after{transform:translate(-50%,-50%) rotate(90deg);transition:transform .35s}
+.zu-faq details[open] summary i{background:var(--ui-acc);color:var(--ui-acc-fg);border-color:var(--ui-acc);transform:rotate(180deg)}
+.zu-faq details[open] summary i::after{transform:translate(-50%,-50%) rotate(0)}
+.zu-faq .ans{overflow:hidden}
+.zu-faq .ans p{padding:0 4px 22px;color:var(--ui-mute);line-height:1.65;max-width:70ch;font-size:16px}
+
+/* active nav link (designs can restyle) */
+a.is-active{opacity:1}
